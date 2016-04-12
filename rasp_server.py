@@ -1,15 +1,26 @@
 from SimpleWebSocketServer import SimpleWebSocketServer, WebSocket
 
-def callMagic():
-	print 'called !'
+import RPi.GPIO as GPIO
+
+def LEDOn():
+	GPIO.setmode(GPIO.BOARD)
+	GPIO.setwarnings(False)
+	GPIO.setup(8, GPIO.HIGH)
+
+def LEDOff():
+	GPIO.setmode(GPIO.BOARD)
+	GPIO.setwarnings(False)
+	GPIO.setup(8, GPIO.LOW)
 
 clients = []
 class SimpleServer(WebSocket):
 
 	def handleMessage(self):
 
-		if self.data == '/Magic':
-			callMagic()
+		if self.data == '/LedOn':
+			LEDOn()
+		elif self.data == '/LedOff':
+			LEDOff()
 
 		for client in clients:
 			if client != self:
