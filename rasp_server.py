@@ -1,30 +1,16 @@
 from SimpleWebSocketServer import SimpleWebSocketServer, WebSocket
-
 import RPi.GPIO as GPIO
 
-def LEDOn():
-	GPIO.setmode(GPIO.BOARD)
-	GPIO.setwarnings(False)
-	GPIO.setup(8, GPIO.HIGH)
-
-def LEDOff():
-	GPIO.setmode(GPIO.BOARD)
-	GPIO.setwarnings(False)
-	GPIO.setup(8, GPIO.LOW)
-
 clients = []
-class SimpleServer(WebSocket):
+class RaspServer(WebSocket):
 
 	def handleMessage(self):
-
 		if self.data == '/LedOn':
 			LEDOn()
 		elif self.data == '/LedOff':
 			LEDOff()
-
-		for client in clients:
-			if client != self:
-				client.sendMessage(self.address[0] + u' - ' + self.data)
+		else:
+			sendToOthers(self)
 
 	def handleConnected(self):
 		for client in clients:
@@ -35,6 +21,22 @@ class SimpleServer(WebSocket):
 	def handleClose(self):
 		print self.address, 'closed'
 
+	def sendToOthers(self):
+		for client in clients:
+			if client != self:
+				client.sendMessage(self.address[0] + u' - ' + self.data)
 
-server = SimpleWebSocketServer('', 5000, SimpleServer)
+def rasp_init():
+	GPIO.setmode(GPIO.BOARD)
+	GPIO.setwarnings(False)
+
+def LEDOn():
+	GPIO.setup(8, GPIO.OUT)
+	GPIO.output(8, GPIO.HIGH)
+
+def LEDOff():
+	GPIO.setup(8, GPIO.OUT)
+	GPIO.output(8, GPIO.LOW)
+
+server = SimpleWebSocketServer('', 5000, RaspServer)
 server.serveforever()
