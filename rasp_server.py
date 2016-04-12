@@ -1,6 +1,8 @@
 from SimpleWebSocketServer import SimpleWebSocketServer, WebSocket
 import RPi.GPIO as GPIO
 
+rasp_init()
+
 clients = []
 class RaspServer(WebSocket):
 
