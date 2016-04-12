@@ -1,7 +1,8 @@
 from SimpleWebSocketServer import SimpleWebSocketServer, WebSocket
 import RPi.GPIO as GPIO
 
-rasp_init()
+GPIO.setmode(GPIO.BOARD)
+GPIO.setwarnings(False)
 
 clients = []
 class RaspServer(WebSocket):
@@ -27,10 +28,6 @@ class RaspServer(WebSocket):
 		for client in clients:
 			if client != self:
 				client.sendMessage(self.address[0] + u' - ' + self.data)
-
-def rasp_init():
-	GPIO.setmode(GPIO.BOARD)
-	GPIO.setwarnings(False)
 
 def LEDOn():
 	GPIO.setup(8, GPIO.OUT)
