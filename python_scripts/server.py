@@ -1,28 +1,38 @@
 from SimpleWebSocketServer import SimpleWebSocketServer, WebSocket
-import json
+import base64, json
 
-def getData():
+def getTemp():
 	return json.dumps({
-	"val1": {
-		"date": "156322",
-		"temp": "37"
-	},
-	"val2": {
-		"date": "156390",
-		"temp": "37.6"
-	},
-	"val3": {
-		"date": "157110",
-		"temp": "36.2"
-	}
-})
+		"type_of_data": "temp",
+		"data": [{
+			"date": "156322",
+			"temp": "37"
+		}, {
+			"date": "156390",
+			"temp": "37.6"
+		}, {
+			"date": "157110",
+			"temp": "36.2"
+		}]
+	})
+
+def getImage():
+	f = open('sample/vortex.jpg', 'r')
+	image = base64.b64encode(f.read())
+	f.close()
+	return json.dumps({
+		"type_of_data": "image",
+		"data": image
+		})
 
 clients = []
 class SimpleChat(WebSocket):
 
 	def handleMessage(self):
-		if self.data == '/getData':
-			self.sendMessage(u'' + getData())
+		if self.data == '/getTemp':
+			self.sendMessage(u'' + getTemp())
+		elif self.data == '/getImage':
+			self.sendMessage(u'' + getImage())
 
 	def handleConnected(self):
 		clients.append(self)

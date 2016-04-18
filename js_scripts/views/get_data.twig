@@ -5,5 +5,9 @@
 {% endblock %}
 
 {% block body %}
-	<p id='print_data'></p>
+	<ul id = 'list_temp'></ul>
+	<img id = 'rasp_image'>
+
+	<input type="button" name=refreshTempButton value="Refresh Temp" onClick="sendText('/getTemp');">
+	<input type="button" name=getImageButton value="Get image" onClick="sendText('/getImage');">
 {% endblock %}

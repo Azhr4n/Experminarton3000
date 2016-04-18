@@ -10,11 +10,27 @@ socket.onclose = function(event) {onCloseEvent(event)};
 socket.onerror = function(event) {onErrorEvent(event)};
 
 function onOpenEvent(event) {
-	socket.send('/getData');
 };
 
 function onMessageEvent(event) {
-	document.getElementById('print_data').appendChild(createListValue(event.data));
+	if (isJsonString(event.data)) {
+		var node;
+		var obj = JSON.parse(event.data);
+
+		if (('type_of_data' && 'data') in obj) {
+			data = obj.data;
+			if (obj.type_of_data == 'temp') {
+				node = document.getElementById('list_temp');
+				clearNode(node);
+				node.appendChild(createListFromJson(data));
+			}
+			else if (obj.type_of_data == 'image') {
+				node = document.getElementById('rasp_image');
+				clearNode(node);
+				node.src = 'data:image/jpg;base64,' + data;
+			}
+		}
+	}
 };
 
 function onCloseEvent(event) {
@@ -26,20 +42,41 @@ function onErrorEvent(event) {
 	socket.close();
 };
 
-function createListValue(json_data) {
-	values = json_data.split('},');
+function sendText(str) {
+	socket.send(str);
+};
 
-	for (var i = 0; i < values.length; i++) {
-		values[i] = values[i].replace(/[{"}]/g, '');
-		values[i] = values[i].replace(/,/g, ' ');
+function clearNode(node) {
+	while (node.firstChild) {
+		node.removeChild(node.firstChild);
 	}
+};
 
-	var list = document.createElement('ul');
+function isJsonString(str) {
+    try {
+        JSON.parse(str);
+    } catch (e) {
+        return false;
+    }
+    return true;
+};
 
-	for (i = 0; i < values.length; i++) {
-		var item = document.createElement('li');
+function createListFromJson(json_data) {
+	var i, inc, item;
+	var list = document.createElement('ul'); 
 
-		item.appendChild(document.createTextNode(values[i]));
+	for (data in json_data) {
+		inc = 0;
+		item = document.createElement('li');
+		for (value in json_data[data]) {
+			if (inc == 0) {
+				item.appendChild(document.createTextNode(value + ':' + json_data[data][value]));
+			}
+			else {
+				item.appendChild(document.createTextNode(', ' + value + ':' + json_data[data][value]));
+			}
+			inc++;
+		}
 		list.appendChild(item);
 	}
 	return list;
