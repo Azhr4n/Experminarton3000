@@ -1,4 +1,8 @@
-var socket = new WebSocket('ws://localhost:8000');
+
+var addr = '172.20.10.25';
+var port = '8000';
+
+var socket = new WebSocket('ws://' + addr + ':' + port);
 
 socket.onopen = function(event) {onOpenEvent(event)};
 socket.onmessage = function(event) {onMessageEvent(event)};
