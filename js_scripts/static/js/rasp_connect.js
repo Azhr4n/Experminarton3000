@@ -1,5 +1,5 @@
 
-var addr = '172.20.10.25';
+var addr = 'localhost';
 var port = '8000';
 
 var socket = new WebSocket('ws://' + addr + ':' + port);
@@ -10,6 +10,8 @@ socket.onclose = function(event) {onCloseEvent(event)};
 socket.onerror = function(event) {onErrorEvent(event)};
 
 function onOpenEvent(event) {
+	updateData();
+	setInterval(updateData, 15000);
 };
 
 function onMessageEvent(event) {
@@ -34,12 +36,18 @@ function onMessageEvent(event) {
 };
 
 function onCloseEvent(event) {
-
+	clearInterval();
 };
 
 function onErrorEvent(event) {
 	console.log('Error : ' + event.data);
 	socket.close();
+};
+
+function updateData() {
+	console.log('Refresh !');
+	sendText('/getTemp');
+	sendText('/getImage');
 };
 
 function sendText(str) {
